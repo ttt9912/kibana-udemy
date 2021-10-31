@@ -1,0 +1,12 @@
+----------------------------------
+Kibana ELASTICSEARCH_HOSTS
+----------------------------------
+- ELASTICSEARCH_HOSTS must be configured as environment variable
+- Using elasticsearch.hosts in kibana.yml does not work
+
+----------------------------------
+Xmx, Xms
+----------------------------------
+- Use 1g to import datasets
+- Requires to increase docker Resources
+  in docker settings

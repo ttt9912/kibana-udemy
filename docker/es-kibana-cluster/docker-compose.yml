@@ -1,0 +1,119 @@
+version: "3.8"
+services:
+  es01:
+    build:
+      context: elasticsearch/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    container_name: es01
+    volumes:
+      - type: bind
+        source: ./elasticsearch/elasticsearch.yml
+        target: /usr/share/elasticsearch/config/elasticsearch.yml
+        read_only: true
+      - type: volume
+        source: es01-data
+        target: /usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      ES_JAVA_OPTS: "-Xmx1g -Xms1g"
+      node.name: es-node01
+      discovery.seed_hosts: es01,es02,es03
+      cluster.initial_master_nodes: es-node01,es-node02,es-node03
+      # bootstrap.memory_lock: 'true'
+      discovery.zen.minimum_master_nodes: 2
+    networks:
+      - elk
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+
+  es02:
+    build:
+      context: elasticsearch/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    container_name: es02
+    volumes:
+      - type: bind
+        source: ./elasticsearch/elasticsearch.yml
+        target: /usr/share/elasticsearch/config/elasticsearch.yml
+        read_only: true
+      - type: volume
+        source: es02-data
+        target: /usr/share/elasticsearch/data
+    environment:
+      ES_JAVA_OPTS: "-Xmx1g -Xms1g"
+      node.name: es-node02
+      discovery.seed_hosts: es01,es02,es03
+      cluster.initial_master_nodes: es-node01,es-node02,es-node03
+      # bootstrap.memory_lock: 'true'
+      discovery.zen.minimum_master_nodes: 2
+    networks:
+      - elk
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+
+  es03:
+    build:
+      context: elasticsearch/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    container_name: es03
+    volumes:
+      - type: bind
+        source: ./elasticsearch/elasticsearch.yml
+        target: /usr/share/elasticsearch/config/elasticsearch.yml
+        read_only: true
+      - type: volume
+        source: es03-data
+        target: /usr/share/elasticsearch/data
+    environment:
+      ES_JAVA_OPTS: "-Xmx1g -Xms1g"
+      node.name: es-node03
+      discovery.seed_hosts: es01,es02,es03
+      cluster.initial_master_nodes: es-node01,es-node02,es-node03
+      # bootstrap.memory_lock: 'true'
+      discovery.zen.minimum_master_nodes: 2
+    networks:
+      - elk
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+
+  kib:
+    build:
+      context: kibana/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    container_name: kib
+    volumes:
+      - type: bind
+        source: ./kibana/kibana.yml
+        target: /usr/share/kibana/kibana.yml
+        read_only: true
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=["http://es01:9200","http://es02:9200"]
+    networks:
+      - elk
+    depends_on:
+      - es01
+      - es02
+      - es03
+
+volumes:
+  es01-data:
+  es02-data:
+  es03-data:
+
+networks:
+  elk:
+    driver: bridge
