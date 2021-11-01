@@ -1,18 +1,18 @@
 version: "3.8"
 services:
-  es01:
+  elasticsearch-1:
     build:
       context: elasticsearch/
       args:
         ELK_VERSION: $ELK_VERSION
-    container_name: es01
+    container_name: elasticsearch-1
     volumes:
       - type: bind
         source: ./elasticsearch/elasticsearch.yml
         target: /usr/share/elasticsearch/config/elasticsearch.yml
         read_only: true
       - type: volume
-        source: es01-data
+        source: elasticsearch-1-data
         target: /usr/share/elasticsearch/data
     ports:
       - "9200:9200"
@@ -20,7 +20,7 @@ services:
     environment:
       ES_JAVA_OPTS: "-Xmx1g -Xms1g"
       node.name: es-node01
-      discovery.seed_hosts: es01,es02,es03
+      discovery.seed_hosts: elasticsearch-1,elasticsearch-2,elasticsearch-3
       cluster.initial_master_nodes: es-node01,es-node02,es-node03
       # bootstrap.memory_lock: 'true'
       discovery.zen.minimum_master_nodes: 2
@@ -31,24 +31,24 @@ services:
         soft: -1
         hard: -1
 
-  es02:
+  elasticsearch-2:
     build:
       context: elasticsearch/
       args:
         ELK_VERSION: $ELK_VERSION
-    container_name: es02
+    container_name: elasticsearch-2
     volumes:
       - type: bind
         source: ./elasticsearch/elasticsearch.yml
         target: /usr/share/elasticsearch/config/elasticsearch.yml
         read_only: true
       - type: volume
-        source: es02-data
+        source: elasticsearch-2-data
         target: /usr/share/elasticsearch/data
     environment:
       ES_JAVA_OPTS: "-Xmx1g -Xms1g"
       node.name: es-node02
-      discovery.seed_hosts: es01,es02,es03
+      discovery.seed_hosts: elasticsearch-1,elasticsearch-2,elasticsearch-3
       cluster.initial_master_nodes: es-node01,es-node02,es-node03
       # bootstrap.memory_lock: 'true'
       discovery.zen.minimum_master_nodes: 2
@@ -59,24 +59,24 @@ services:
         soft: -1
         hard: -1
 
-  es03:
+  elasticsearch-3:
     build:
       context: elasticsearch/
       args:
         ELK_VERSION: $ELK_VERSION
-    container_name: es03
+    container_name: elasticsearch-3
     volumes:
       - type: bind
         source: ./elasticsearch/elasticsearch.yml
         target: /usr/share/elasticsearch/config/elasticsearch.yml
         read_only: true
       - type: volume
-        source: es03-data
+        source: elasticsearch-3-data
         target: /usr/share/elasticsearch/data
     environment:
       ES_JAVA_OPTS: "-Xmx1g -Xms1g"
       node.name: es-node03
-      discovery.seed_hosts: es01,es02,es03
+      discovery.seed_hosts: elasticsearch-1,elasticsearch-2,elasticsearch-3
       cluster.initial_master_nodes: es-node01,es-node02,es-node03
       # bootstrap.memory_lock: 'true'
       discovery.zen.minimum_master_nodes: 2
@@ -87,12 +87,12 @@ services:
         soft: -1
         hard: -1
 
-  kib:
+  kibana:
     build:
       context: kibana/
       args:
         ELK_VERSION: $ELK_VERSION
-    container_name: kib
+    container_name: kibana
     volumes:
       - type: bind
         source: ./kibana/kibana.yml
@@ -101,18 +101,18 @@ services:
     ports:
       - "5601:5601"
     environment:
-      - ELASTICSEARCH_HOSTS=["http://es01:9200","http://es02:9200"]
+      - ELASTICSEARCH_HOSTS=["http://elasticsearch-1:9200","http://elasticsearch-2:9200"]
     networks:
       - elk
     depends_on:
-      - es01
-      - es02
-      - es03
+      - elasticsearch-1
+      - elasticsearch-2
+      - elasticsearch-3
 
 volumes:
-  es01-data:
-  es02-data:
-  es03-data:
+  elasticsearch-1-data:
+  elasticsearch-2-data:
+  elasticsearch-3-data:
 
 networks:
   elk:
