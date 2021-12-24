@@ -2,6 +2,9 @@
 ## Default Elasticsearch configuration from Elasticsearch base image.
 ## https://github.com/elastic/elasticsearch/blob/master/distribution/docker/src/docker/config/elasticsearch.yml
 #
+# network.host: 0.0.0.0 - ensures the node is reachable for HTTP and transport traffic,
+#  provided its ports are exposed.
+#
 cluster.name: "es-cluster"
 network.host: 0.0.0.0
 

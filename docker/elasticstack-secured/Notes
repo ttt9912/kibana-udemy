@@ -1,0 +1,30 @@
+-----------------------------------------------
+1.) Generate certificates
+-----------------------------------------------
+$ docker-compose -f create-certs.yml run --rm create_certs
+
+-----------------------------------------------
+2.) Start Elastic cluster
+-----------------------------------------------
+$ docker-compose -f elastic-docker-tls.yml up -d
+
+-> at this point, kibana cannot connect because it requires a
+password
+
+-----------------------------------------------
+3.) Create Kibana password
+-----------------------------------------------
+$ docker exec elasticsearch01 /bin/bash -c "bin/elasticsearch-setup-passwords auto --batch --url https://elasticsearch01:9200"
+
+-> elasticsearch-setup-passwords tool generates passwords for all built-in users,
+including the kibana_system user
+
+-----------------------------------------------
+4.) Login
+-----------------------------------------------
+https://localhost:5601
+
+type "thisisunsafe" in the browser
+- https://dblazeski.medium.com/chrome-bypass-net-err-cert-invalid-for-development-daefae43eb12
+
+Login with 'elastic' user

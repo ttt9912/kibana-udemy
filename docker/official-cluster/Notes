@@ -1,0 +1,24 @@
+https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#docker-configuration-methods
+
+---------------------------------
+Confiuration
+---------------------------------
+
+- config files are loaded from '/usr/share/elasticsearch/config/'
+- override files using bind mounts
+- override single variables using docker environment variables
+
+Depending on the orchestration platform, properties
+have to be uppercase with '_' insteat of '.'
+- bootstrap.memory_lock=true
+- ES_SETTING_BOOTSTRAP_MEMORY__LOCK=true
+
+---------------------------------
+Password file
+---------------------------------
+bind-mount the bootstrap password file
+
+-e ELASTIC_PASSWORD_FILE=/run/secrets/bootstrapPassword.txt
+
+
+
