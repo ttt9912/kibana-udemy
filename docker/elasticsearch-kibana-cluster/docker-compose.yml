@@ -1,11 +1,11 @@
 version: "3.8"
 services:
-  elasticsearch-1:
+  elasticsearch-01:
     build:
       context: elasticsearch/
       args:
         ELK_VERSION: $ELK_VERSION
-    container_name: elasticsearch-1
+    container_name: elasticsearch-01
     volumes:
       - type: bind
         source: ./elasticsearch/elasticsearch.yml
@@ -20,7 +20,7 @@ services:
     environment:
       ES_JAVA_OPTS: "-Xmx1g -Xms1g"
       node.name: es-node01
-      discovery.seed_hosts: elasticsearch-1,elasticsearch-2,elasticsearch-3
+      discovery.seed_hosts: elasticsearch-01,elasticsearch-02,elasticsearch-03
       cluster.initial_master_nodes: es-node01,es-node02,es-node03
       # bootstrap.memory_lock: 'true'
       discovery.zen.minimum_master_nodes: 2
@@ -31,12 +31,12 @@ services:
         soft: -1
         hard: -1
 
-  elasticsearch-2:
+  elasticsearch-02:
     build:
       context: elasticsearch/
       args:
         ELK_VERSION: $ELK_VERSION
-    container_name: elasticsearch-2
+    container_name: elasticsearch-02
     volumes:
       - type: bind
         source: ./elasticsearch/elasticsearch.yml
@@ -48,7 +48,7 @@ services:
     environment:
       ES_JAVA_OPTS: "-Xmx1g -Xms1g"
       node.name: es-node02
-      discovery.seed_hosts: elasticsearch-1,elasticsearch-2,elasticsearch-3
+      discovery.seed_hosts: elasticsearch-01,elasticsearch-02,elasticsearch-03
       cluster.initial_master_nodes: es-node01,es-node02,es-node03
       # bootstrap.memory_lock: 'true'
       discovery.zen.minimum_master_nodes: 2
@@ -59,12 +59,12 @@ services:
         soft: -1
         hard: -1
 
-  elasticsearch-3:
+  elasticsearch-03:
     build:
       context: elasticsearch/
       args:
         ELK_VERSION: $ELK_VERSION
-    container_name: elasticsearch-3
+    container_name: elasticsearch-03
     volumes:
       - type: bind
         source: ./elasticsearch/elasticsearch.yml
@@ -76,7 +76,7 @@ services:
     environment:
       ES_JAVA_OPTS: "-Xmx1g -Xms1g"
       node.name: es-node03
-      discovery.seed_hosts: elasticsearch-1,elasticsearch-2,elasticsearch-3
+      discovery.seed_hosts: elasticsearch-01,elasticsearch-02,elasticsearch-03
       cluster.initial_master_nodes: es-node01,es-node02,es-node03
       # bootstrap.memory_lock: 'true'
       discovery.zen.minimum_master_nodes: 2
@@ -101,13 +101,13 @@ services:
     ports:
       - "5601:5601"
     environment:
-      - ELASTICSEARCH_HOSTS=["http://elasticsearch-1:9200","http://elasticsearch-2:9200"]
+      - ELASTICSEARCH_HOSTS=["http://elasticsearch-01:9200","http://elasticsearch-02:9200"]
     networks:
       - elk
     depends_on:
-      - elasticsearch-1
-      - elasticsearch-2
-      - elasticsearch-3
+      - elasticsearch-01
+      - elasticsearch-02
+      - elasticsearch-03
 
 volumes:
   elasticsearch-1-data:
